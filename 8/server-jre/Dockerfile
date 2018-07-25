@@ -10,7 +10,7 @@ ENV ROOTFS /build/rootfs
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Build pre-requisites
-RUN bash -c 'mkdir -p ${ROOTFS}/{usr/local/bin,opt}'
+RUN bash -c 'mkdir -p ${ROOTFS}/{usr/bin,usr/local/bin,opt}'
 
 # Install pre-requisites
 RUN apt-get update \
