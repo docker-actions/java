@@ -1,10 +1,10 @@
 FROM ubuntu:bionic as build
 
-ARG JAVA_VERSION=8u181
-ARG JAVA_VERSION_BUILD=b13
+ARG JAVA_VERSION=10.0.2
+ARG JAVA_VERSION_BUILD=13
 ARG JAVA_PACKAGE=jdk
-ARG JAVA_SHA256_SUM=1845567095bfbfebd42ed0d09397939796d05456290fb20a83c476ba09f991d3
-ARG JAVA_URL_ELEMENT=96a7b8442fe848ef90c96a2fad6ed6d1
+ARG JAVA_SHA256_SUM=6633c20d53c50c20835364d0f3e172e0cbbce78fff81867488f22a6298fa372b
+ARG JAVA_URL_ELEMENT=19aef61b38124481863b1413dce1855f
 
 ENV ROOTFS /build/rootfs
 ENV DEBIAN_FRONTEND=noninteractive
@@ -24,8 +24,8 @@ RUN apt-get install -y ca-certificates ca-certificates-java \
 
 # Java
 RUN curl -jkLH "Cookie: oraclelicense=accept-securebackup-cookie" -o java.tar.gz \
-      http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION}-${JAVA_VERSION_BUILD}/${JAVA_URL_ELEMENT}/${JAVA_PACKAGE}-${JAVA_VERSION}-linux-x64.tar.gz \
-    && echo "$JAVA_SHA256_SUM  java.tar.gz" | sha256sum -c - \
+      http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION}+${JAVA_VERSION_BUILD}/${JAVA_URL_ELEMENT}/${JAVA_PACKAGE}-${JAVA_VERSION}_linux-x64_bin.tar.gz \
+    && echo "$JAVA_SHA256_SUM java.tar.gz" | sha256sum -c - \
     && gunzip -c java.tar.gz | tar -xf - -C $ROOTFS/opt \
     && rm -f java.tar.gz \
     && cd ${ROOTFS}/opt/$(basename ${ROOTFS}/opt/jdk*)/bin \
@@ -34,10 +34,11 @@ RUN curl -jkLH "Cookie: oraclelicense=accept-securebackup-cookie" -o java.tar.gz
        done \
     && ln -s /opt/$(basename ${ROOTFS}/opt/jdk*) ${ROOTFS}/opt/jdk
 
+
 COPY entrypoint.sh ${ROOTFS}/usr/local/bin/entrypoint.sh
 RUN chmod +x ${ROOTFS}/usr/local/bin/entrypoint.sh
 
-FROM actions/bash:4.4.18-1
+FROM actions/bash:4.4.18-4
 LABEL maintainer = "ilja+docker@bobkevic.com"
 
 ARG ROOTFS=/build/rootfs

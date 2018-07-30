@@ -2,8 +2,8 @@ FROM ubuntu:bionic as build
 
 ARG JAVA_VERSION=8u181
 ARG JAVA_VERSION_BUILD=b13
-ARG JAVA_PACKAGE=server-jre
-ARG JAVA_SHA256_SUM=678e798008c398be98ba9d39d5114a9b4151f9d3023ccdce8b56f94c5d450698
+ARG JAVA_PACKAGE=jdk
+ARG JAVA_SHA256_SUM=1845567095bfbfebd42ed0d09397939796d05456290fb20a83c476ba09f991d3
 ARG JAVA_URL_ELEMENT=96a7b8442fe848ef90c96a2fad6ed6d1
 
 ENV ROOTFS /build/rootfs
@@ -37,7 +37,7 @@ RUN curl -jkLH "Cookie: oraclelicense=accept-securebackup-cookie" -o java.tar.gz
 COPY entrypoint.sh ${ROOTFS}/usr/local/bin/entrypoint.sh
 RUN chmod +x ${ROOTFS}/usr/local/bin/entrypoint.sh
 
-FROM actions/bash:4.4.18-1
+FROM actions/bash:4.4.18-4
 LABEL maintainer = "ilja+docker@bobkevic.com"
 
 ARG ROOTFS=/build/rootfs
