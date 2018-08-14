@@ -10,7 +10,7 @@ ENV ROOTFS /build/rootfs
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Build pre-requisites
-RUN bash -c 'mkdir -p ${ROOTFS}/{usr/bin,usr/local/bin,opt}'
+RUN bash -c 'mkdir -p ${ROOTFS}/{sbin,usr/bin,usr/local/bin,opt}'
 
 # Install pre-requisites
 RUN apt-get update \
@@ -34,11 +34,18 @@ RUN curl -jkLH "Cookie: oraclelicense=accept-securebackup-cookie" -o java.tar.gz
        done \
     && ln -s /opt/$(basename ${ROOTFS}/opt/jdk*) ${ROOTFS}/opt/jdk
 
+# Move /sbin out of the way
+RUN mv ${ROOTFS}/sbin ${ROOTFS}/sbin.orig \
+      && mkdir -p ${ROOTFS}/sbin \
+      && for b in ${ROOTFS}/sbin.orig/*; do \
+           echo 'cmd=$(basename ${BASH_SOURCE[0]}); exec /sbin.orig/$cmd "$@"' > ${ROOTFS}/sbin/$(basename $b); \
+           chmod +x ${ROOTFS}/sbin/$(basename $b); \
+         done
 
 COPY entrypoint.sh ${ROOTFS}/usr/local/bin/entrypoint.sh
 RUN chmod +x ${ROOTFS}/usr/local/bin/entrypoint.sh
 
-FROM actions/bash:4.4.18-4
+FROM actions/bash:4.4.18-6
 LABEL maintainer = "ilja+docker@bobkevic.com"
 
 ARG ROOTFS=/build/rootfs
